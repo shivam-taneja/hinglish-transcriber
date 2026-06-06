@@ -142,12 +142,22 @@ with col2:
                         bufsize=1,
                     )
 
+                    log_container = st.empty()
+                    logs = []
+
                     # Stream the output live to the Streamlit UI
                     for line in process.stdout:
                         if line.strip():
-                            st.write(line.strip())
+                            logs.append(line.strip())
+                            # Show a live updating terminal window of the last 15 lines (simulates auto-scrolling)
+                            windowed_logs = "\n".join(logs[-15:])
+                            log_container.code(windowed_logs, language="bash")
 
                     process.wait()
+
+                    # When finished, show the full logs
+                    if logs:
+                        log_container.code("\n".join(logs), language="bash")
 
                     if process.returncode == 0 and os.path.exists(output_path):
                         status.update(
