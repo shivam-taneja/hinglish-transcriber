@@ -66,7 +66,7 @@ You can launch the interactive web interface using Streamlit:
 streamlit run app.py
 ```
 
-This will open a browser window where you can easily upload your audio/video files, preview them, and download the generated subtitles.
+This will open a browser window where you can easily upload your audio/video files, preview them, and download the generated subtitles. The SRT files are also automatically saved directly to your local project directory!
 
 ### Command Line Interface
 
