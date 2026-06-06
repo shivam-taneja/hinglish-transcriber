@@ -48,11 +48,15 @@ A fully local, command-line transcription tool that converts Hindi/Hinglish audi
 │   ├── audio.py
 │   ├── transcriber.py
 │   └── utils.py
+├── frontend/          # Web UI components and logic
+│   ├── components.py
+│   ├── paths.py
+│   └── runner.py
 ├── env/               # Virtual environment (ignored in git)
 ├── requirements.txt   # Required Python dependencies
 ├── scripts/
 │   └── transcribe.py  # The main transcription CLI script
-├── app.py             # Streamlit web UI
+├── app.py             # Streamlit web UI (Orchestrator)
 └── README.md
 ```
 
