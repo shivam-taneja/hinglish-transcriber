@@ -1,6 +1,6 @@
 # Hinglish Audio/Video Transcriber
 
-A fully local, command-line transcription tool that converts Hindi/Hinglish audio and video files into SRT subtitles. It is optimized for Apple Silicon (M-series chips) using PyTorch's MPS backend and runs the `Oriserve/Whisper-Hindi2Hinglish-Apex` model.
+A fully local transcription tool that converts Hindi/Hinglish audio and video files into SRT subtitles. It automatically detects and utilizes your system's hardware acceleration (CUDA for Nvidia GPUs, or MPS for Apple Silicon) to run the `Oriserve/Whisper-Hindi2Hinglish-Apex` model at blazing speeds.
 
 ## Demo
 
@@ -9,7 +9,7 @@ https://github.com/user-attachments/assets/dcff2182-8455-477d-b123-271b4fc94f67
 ## Features
 
 - **100% Local:** No API keys or internet connection required after the initial model download.
-- **Hardware Accelerated:** Uses Apple Metal Performance Shaders (MPS) for fast transcription on M-series chips.
+- **Hardware Accelerated:** Automatically uses CUDA on Windows/Linux or Metal Performance Shaders (MPS) on Mac for lightning-fast transcription.
 - **Memory Efficient:** Processes audio in 30-second chunks to prevent out-of-memory crashes on large files.
 - **Universal Input:** Accepts `.wav`, `.mp3`, `.m4a`, `.flac`, and automatically extracts audio from video files (like `.mp4`).
 
