@@ -1,1 +1,26 @@
-env/*
+# Environments
+env/
+.env/
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Mac
+.DS_Store
+
+# Media and Output Files
+*.mp4
+*.mkv
+*.mov
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.srt
+
+# Streamlit
+.streamlit/
