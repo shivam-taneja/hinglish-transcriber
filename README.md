@@ -44,9 +44,8 @@ A fully local, command-line transcription tool that converts Hindi/Hinglish audi
 
 ```plaintext
 .
-├── env/       # Virtual environment (ignored in git)
-├── input/     # Place your source media here
-├── output/    # Generated SRT files will be saved here
+├── env/               # Virtual environment (ignored in git)
+├── requirements.txt   # Required Python dependencies
 ├── scripts/
 │   └── transcribe.py  # The main transcription CLI script
 └── README.md
@@ -59,13 +58,13 @@ You can run the script from the root directory of the project. It requires an in
 ### Transcribe an Audio File
 
 ```bash
-python scripts/transcribe.py -i input/audio.wav -o output/audio.srt
+python scripts/transcribe.py -i audio.wav -o audio.srt
 ```
 
 ### Transcribe a Video File
 
 ```bash
-python scripts/transcribe.py -i input/video.mp4 -o output/video_subs.srt
+python scripts/transcribe.py -i video.mp4 -o video_subs.srt
 ```
 
 ### Using Absolute Paths (External Drives)
