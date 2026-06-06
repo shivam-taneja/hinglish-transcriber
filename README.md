@@ -44,18 +44,35 @@ A fully local, command-line transcription tool that converts Hindi/Hinglish audi
 
 ```plaintext
 .
+├── backend/           # Core transcription logic modules
+│   ├── audio.py
+│   ├── transcriber.py
+│   └── utils.py
 ├── env/               # Virtual environment (ignored in git)
 ├── requirements.txt   # Required Python dependencies
 ├── scripts/
 │   └── transcribe.py  # The main transcription CLI script
+├── app.py             # Streamlit web UI
 └── README.md
 ```
 
 ## Usage
 
+### Web UI (Recommended)
+
+You can launch the interactive web interface using Streamlit:
+
+```bash
+streamlit run app.py
+```
+
+This will open a browser window where you can easily upload your audio/video files, preview them, and download the generated subtitles.
+
+### Command Line Interface
+
 You can run the script from the root directory of the project. It requires an input path (`-i`). If an output path (`-o`) is not provided, it will save the subtitle file in the same directory as the input file, but with a `.srt` extension.
 
-### Transcribe an Audio File
+#### Transcribe an Audio File
 
 ```bash
 python scripts/transcribe.py -i audio.wav -o audio.srt
