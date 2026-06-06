@@ -10,12 +10,33 @@ def format_timestamp(seconds):
 
 def generate_srt(chunks, output_path):
     with open(output_path, "w", encoding="utf-8") as f:
-        for i, chunk in enumerate(chunks, start=1):
-            start, end = chunk["timestamp"]
+        prev_end = 0.0
+        subtitle_index = 1
+
+        for chunk in chunks:
+            text = chunk.get("text", "").strip()
+            if not text:
+                continue
+
+            timestamps = chunk.get("timestamp", (None, None))
+            if isinstance(timestamps, (list, tuple)) and len(timestamps) == 2:
+                start, end = timestamps
+            else:
+                start, end = None, None
+
+            if start is None:
+                start = prev_end
 
             if end is None:
                 end = start + 2.0
 
-            f.write(f"{i}\n")
+            if end < start:
+                end = start + 2.0
+
+            prev_end = end
+
+            f.write(f"{subtitle_index}\n")
             f.write(f"{format_timestamp(start)} --> {format_timestamp(end)}\n")
-            f.write(f"{chunk['text'].strip()}\n\n")
+            f.write(f"{text}\n\n")
+
+            subtitle_index += 1
