@@ -122,6 +122,14 @@ with col2:
                     else:
                         output_path = os.path.abspath(base_name)
 
+                # Prevent overwriting existing files by appending a timestamp
+                if os.path.exists(output_path):
+                    import datetime
+
+                    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                    name, ext = os.path.splitext(output_path)
+                    output_path = f"{name}_{timestamp}{ext}"
+
                 try:
                     st.write(
                         "Running transcription in an isolated process to prevent memory crashes..."
