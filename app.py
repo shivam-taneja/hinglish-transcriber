@@ -1,53 +1,118 @@
 import streamlit as st
 import os
 import tempfile
+import subprocess
 
 st.set_page_config(page_title="Hinglish Transcriber", layout="wide")
 
 
+@st.fragment
+def reveal_in_finder_button(path):
+    if st.button("Reveal in Finder", type="secondary"):
+        subprocess.run(["open", "-R", path])
+
+
 st.title("Hinglish Audio and Video Transcriber")
 st.markdown(
-    "Upload your Hindi or Hinglish media file to generate an SRT subtitle file locally."
+    "Upload your Hindi or Hinglish media file (or enter its local path) to generate an SRT subtitle file."
 )
 
 col1, col2 = st.columns([1, 1])
 
 with col1:
-    st.subheader("Upload Media")
-    uploaded_file = st.file_uploader(
-        "Choose a file", type=["wav", "mp3", "m4a", "flac", "mp4", "mkv", "mov"]
+    st.subheader("Select Media")
+
+    tab1, tab2 = st.tabs(["Enter File Path (Recommended)", "Upload File"])
+
+    uploaded_file = None
+    local_file_path = ""
+
+    with tab1:
+        st.markdown(
+            "**Provides the best experience:** The subtitle will automatically save in the exact same folder as your input file!"
+        )
+        local_file_path = st.text_input(
+            "Absolute File Path",
+            placeholder="e.g., /Users/shivamtaneja/Documents/content/bhondu life/ep1/a.wav",
+        )
+        if local_file_path and os.path.exists(local_file_path):
+            st.success("File found!")
+        elif local_file_path:
+            st.error("File not found. Please double-check the path.")
+
+    with tab2:
+        st.markdown(
+            "*Note: Web browsers hide the original folder path of uploaded files for security. Uploaded files will save the SRT to the project root unless you specify a custom directory below.*"
+        )
+        uploaded_file = st.file_uploader(
+            "Choose a file", type=["wav", "mp3", "m4a", "flac", "mp4", "mkv", "mov"]
+        )
+
+        if uploaded_file is not None:
+            file_ext = uploaded_file.name.split(".")[-1].lower()
+            if file_ext in ["wav", "mp3", "m4a", "flac"]:
+                st.audio(uploaded_file)
+            else:
+                st.video(uploaded_file)
+
+    st.divider()
+    custom_dir = st.text_input(
+        "Custom Output Directory (Optional)",
+        placeholder="e.g., /Users/shivamtaneja/Desktop",
+        help="If left blank, it defaults to the input folder (if using File Path) or project root (if using Upload).",
     )
 
-    if uploaded_file is not None:
-        file_ext = uploaded_file.name.split(".")[-1].lower()
-        if file_ext in ["wav", "mp3", "m4a", "flac"]:
-            st.audio(uploaded_file)
-        else:
-            st.video(uploaded_file)
 
 with col2:
     st.subheader("Transcription Status")
-    if uploaded_file is not None:
+
+    can_transcribe = (local_file_path and os.path.exists(local_file_path)) or (
+        uploaded_file is not None
+    )
+
+    if can_transcribe:
         if st.button("Start Transcription", type="primary", use_container_width=True):
             with st.status("Processing your file...", expanded=True) as status:
-                st.write("Saving uploaded file temporarily...")
-                with tempfile.NamedTemporaryFile(
-                    delete=False, suffix=f".{file_ext}"
-                ) as tmp_in:
-                    tmp_in.write(uploaded_file.getvalue())
-                    input_path = tmp_in.name
 
-                # Save the output file permanently in the current directory
-                output_path = os.path.abspath(
-                    f"{os.path.splitext(uploaded_file.name)[0]}.srt"
-                )
+                input_path = ""
+                output_path = ""
+                is_temp_input = False
+                original_filename = ""
+
+                # Determine paths based on input method
+                if local_file_path and os.path.exists(local_file_path):
+                    input_path = local_file_path
+                    original_filename = os.path.basename(local_file_path)
+                    base_name = f"{os.path.splitext(original_filename)[0]}.srt"
+
+                    if custom_dir and os.path.isdir(custom_dir.strip()):
+                        output_path = os.path.join(custom_dir.strip(), base_name)
+                    else:
+                        # Automatically default to the EXACT SAME FOLDER as the input file!
+                        output_path = f"{os.path.splitext(local_file_path)[0]}.srt"
+
+                elif uploaded_file is not None:
+                    st.write("Saving uploaded file temporarily...")
+                    file_ext = uploaded_file.name.split(".")[-1].lower()
+                    with tempfile.NamedTemporaryFile(
+                        delete=False, suffix=f".{file_ext}"
+                    ) as tmp_in:
+                        tmp_in.write(uploaded_file.getvalue())
+                        input_path = tmp_in.name
+                        is_temp_input = True
+
+                    original_filename = uploaded_file.name
+                    base_name = f"{os.path.splitext(original_filename)[0]}.srt"
+
+                    if custom_dir and os.path.isdir(custom_dir.strip()):
+                        output_path = os.path.join(custom_dir.strip(), base_name)
+                    else:
+                        output_path = os.path.abspath(base_name)
 
                 try:
                     st.write(
                         "Running transcription in an isolated process to prevent memory crashes..."
                     )
-
-                    import subprocess
 
                     process = subprocess.Popen(
                         [
@@ -84,7 +149,7 @@ with col2:
                         st.download_button(
                             label="Download Subtitles (SRT)",
                             data=srt_content,
-                            file_name=f"{os.path.splitext(uploaded_file.name)[0]}.srt",
+                            file_name=base_name,
                             mime="text/plain",
                             use_container_width=True,
                         )
@@ -97,6 +162,8 @@ with col2:
                                 disabled=True,
                             )
 
+                        st.session_state["last_output"] = output_path
+
                     else:
                         status.update(label="An error occurred", state="error")
                         st.error("Failed to execute transcription.")
@@ -106,8 +173,14 @@ with col2:
                     st.error(f"Failed to execute transcription: {str(e)}")
 
                 finally:
-                    # Cleanup temp input file
-                    if os.path.exists(input_path):
+                    # Cleanup temp input file if we used the uploader
+                    if is_temp_input and os.path.exists(input_path):
                         os.remove(input_path)
+
+        if st.session_state.get("last_output") and os.path.exists(
+            st.session_state["last_output"]
+        ):
+            reveal_in_finder_button(st.session_state["last_output"])
+
     else:
-        st.info("Please upload a file on the left to begin.")
+        st.info("Please select a file on the left to begin.")
