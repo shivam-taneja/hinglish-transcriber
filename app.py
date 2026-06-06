@@ -45,7 +45,10 @@ with col2:
                     tmp_in.write(uploaded_file.getvalue())
                     input_path = tmp_in.name
 
-                output_path = f"{os.path.splitext(input_path)[0]}.srt"
+                # Save the output file permanently in the current directory
+                output_path = os.path.abspath(
+                    f"{os.path.splitext(uploaded_file.name)[0]}.srt"
+                )
 
                 try:
                     st.write("Loading transcription model into memory...")
@@ -61,7 +64,7 @@ with col2:
                     generate_srt(chunks, output_path)
 
                     status.update(
-                        label="Transcription completed successfully!",
+                        label=f"Transcription completed! File saved at: {output_path}",
                         state="complete",
                         expanded=False,
                     )
@@ -99,7 +102,5 @@ with col2:
                         os.remove(audio_path)
                     if os.path.exists(input_path):
                         os.remove(input_path)
-                    if os.path.exists(output_path):
-                        os.remove(output_path)
     else:
         st.info("Please upload a file on the left to begin.")
