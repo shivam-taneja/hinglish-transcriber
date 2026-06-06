@@ -2,6 +2,10 @@
 
 A fully local, command-line transcription tool that converts Hindi/Hinglish audio and video files into SRT subtitles. It is optimized for Apple Silicon (M-series chips) using PyTorch's MPS backend and runs the `Oriserve/Whisper-Hindi2Hinglish-Apex` model.
 
+## Demo
+
+https://github.com/user-attachments/assets/dcff2182-8455-477d-b123-271b4fc94f67
+
 ## Features
 
 - **100% Local:** No API keys or internet connection required after the initial model download.
