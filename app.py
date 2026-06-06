@@ -2,14 +2,27 @@ import streamlit as st
 import os
 import tempfile
 import subprocess
+import platform
 
 st.set_page_config(page_title="Hinglish Transcriber", layout="wide")
 
 
 @st.fragment
-def reveal_in_finder_button(path):
-    if st.button("Reveal in Finder", type="secondary"):
-        subprocess.run(["open", "-R", path])
+def reveal_file_button(path):
+    os_name = platform.system()
+    btn_text = (
+        "Reveal in Explorer"
+        if os_name == "Windows"
+        else "Reveal in Finder" if os_name == "Darwin" else "Open Folder"
+    )
+
+    if st.button(btn_text, type="secondary"):
+        if os_name == "Windows":
+            subprocess.run(["explorer", "/select,", os.path.normpath(path)])
+        elif os_name == "Darwin":
+            subprocess.run(["open", "-R", path])
+        else:
+            subprocess.run(["xdg-open", os.path.dirname(path)])
 
 
 st.title("Hinglish Audio and Video Transcriber")
@@ -180,7 +193,7 @@ with col2:
         if st.session_state.get("last_output") and os.path.exists(
             st.session_state["last_output"]
         ):
-            reveal_in_finder_button(st.session_state["last_output"])
+            reveal_file_button(st.session_state["last_output"])
 
     else:
         st.info("Please select a file on the left to begin.")
