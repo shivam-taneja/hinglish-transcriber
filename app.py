@@ -46,7 +46,7 @@ with col1:
         )
         local_file_path = st.text_input(
             "Absolute File Path",
-            placeholder="e.g., /Users/shivamtaneja/Documents/content/bhondu life/ep1/a.wav",
+            placeholder="e.g., /Users/shivamtaneja/Downloads/podcast.wav",
         )
         if local_file_path and os.path.exists(local_file_path):
             st.success("File found!")
@@ -71,7 +71,7 @@ with col1:
     st.divider()
     custom_dir = st.text_input(
         "Custom Output Directory (Optional)",
-        placeholder="e.g., /Users/shivamtaneja/Desktop",
+        placeholder="e.g., /Users/shivamtaneja/Downloads",
         help="If left blank, it defaults to the input folder (if using File Path) or project root (if using Upload).",
     )
 
